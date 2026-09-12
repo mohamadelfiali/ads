@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>جارٍ التحويل…</title>
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="dns-prefetch" href="https://script.google.com">
+<style>
+  html,body{margin:0;height:100%}
+  body{display:flex;align-items:center;justify-content:center;background:#fff;
+       font-family:-apple-system,"Segoe UI",Tahoma,sans-serif;color:#777;font-size:15px}
+</style>
+</head>
+<body>
+<span id="msg">جارٍ تحويلك…</span>
+<script>
+(function () {
+  // ⬇⬇ الصق هنا رابط Web App المنتهي بـ /exec ⬇⬇
+  var API = 'ضع_هنا_رابط_Web_App';
+
+  var msg = document.getElementById('msg');
+  var raw = location.hash.replace(/^#/, '');
+  var name = '';
+  try { name = decodeURIComponent(raw).trim(); } catch (e) { name = raw.trim(); }
+
+  function show(t) { msg.textContent = t; }
+  function go(u)   { location.replace(u); }
+
+  if (!name) { show('لا يوجد رابط للتحويل.'); return; }
+
+  // كاش محلي لمدة 60 ثانية: الزيارات المتكررة تتحول فورًا بلا أي طلب
+  try {
+    var c = JSON.parse(localStorage.getItem('go:' + name.toLowerCase()) || 'null');
+    if (c && c.u && Date.now() - c.t < 60000) { go(c.u); return; }
+  } catch (e) {}
+
+  fetch(API + '?action=get&name=' + encodeURIComponent(name))
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (d && d.found && d.url) {
+        try { localStorage.setItem('go:' + name.toLowerCase(),
+              JSON.stringify({ t: Date.now(), u: d.url })); } catch (e) {}
+        go(d.url);
+      } else {
+        show('هذا الرابط غير موجود أو تم حذفه.');
+      }
+    })
+    .catch(function () { show('تعذّر الاتصال، حدّث الصفحة وأعد المحاولة.'); });
+})();
+</script>
+</body>
+</html>
