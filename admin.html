@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لوحة الروابط الإعلانية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7f6f2; --card:#fff; --line:#e6e3db; --ink:#22201c; --muted:#8b8679;
+    --green:#17714a; --green-d:#115c3b; --red:#b23a31; --soft:#f1efe8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif;font-size:15px;line-height:1.7}
+  .wrap{max-width:680px;margin:0 auto;padding:36px 20px 90px}
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+  h1{font-size:21px;font-weight:700;margin:0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;margin-bottom:18px}
+  .card h2{font-size:15px;font-weight:700;margin:0 0 16px;display:flex;align-items:center;gap:8px}
+  .num{width:20px;height:20px;border-radius:50%;background:var(--ink);color:#fff;
+       font-size:11px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+  label{display:block;font-size:12.5px;font-weight:500;color:var(--muted);margin:0 0 6px}
+  input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;
+    font:inherit;font-size:14.5px;background:#fff;color:var(--ink);margin-bottom:14px}
+  input:focus{outline:none;border-color:var(--green)}
+  input::placeholder{color:#c2bcb0}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    padding:9px 18px;border-radius:8px;border:1px solid var(--line);background:#fff;
+    color:var(--ink);font:inherit;font-size:14px;font-weight:500;cursor:pointer}
+  .btn:hover{background:var(--soft)}
+  .btn-p{background:var(--green);border-color:var(--green);color:#fff}
+  .btn-p:hover{background:var(--green-d)}
+  .btn:disabled{opacity:.55;cursor:default}
+  .btn-ic{padding:7px 9px;border:none;background:none;color:var(--muted);border-radius:7px;font-size:12px}
+  .btn-ic:hover{background:var(--soft);color:var(--ink)}
+  .btn-ic.armed{color:#fff;background:var(--red)}
+  .preview{background:var(--soft);border-radius:8px;padding:9px 12px;font-size:13px;
+    direction:ltr;text-align:left;word-break:break-all;color:#4b463d;margin:-4px 0 14px;
+    font-family:ui-monospace,Consolas,monospace}
+  .preview b{color:var(--green);font-weight:700}
+  .created{border-color:#bcd9c9;background:#f2f9f5}
+  .created h2{color:var(--green)}
+  .link{direction:ltr;text-align:left;word-break:break-all;background:#fff;border:1px solid var(--line);
+    border-radius:8px;padding:10px 12px;font-size:13.5px;margin:0 0 12px;
+    font-family:ui-monospace,Consolas,monospace;color:#134d33}
+  .row-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .item{display:flex;align-items:center;gap:12px;padding:13px 2px;border-bottom:1px solid var(--line)}
+  .item:last-child{border-bottom:none}
+  .item .info{flex:1;min-width:0}
+  .item .name{font-weight:700;font-size:14.5px}
+  .item .short{direction:ltr;text-align:left;font-size:12.5px;color:var(--muted);
+    word-break:break-all;font-family:ui-monospace,Consolas,monospace}
+  .empty{color:var(--muted);text-align:center;padding:24px 0;font-size:14px}
+  .hint{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+  .spin{display:inline-block;width:13px;height:13px;border:2px solid #fff;border-top-color:transparent;
+    border-radius:50%;animation:r .7s linear infinite}
+  @keyframes r{to{transform:rotate(360deg)}}
+  [hidden]{display:none!important}
+  #toast{position:fixed;bottom:26px;right:50%;transform:translate(50%,14px);opacity:0;
+    pointer-events:none;background:var(--ink);color:#fff;padding:9px 18px;border-radius:8px;
+    font-size:13.5px;transition:.25s;z-index:50}
+  #toast.show{opacity:1;transform:translate(50%,0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- شاشة الإعداد الأولي -->
+  <div id="setup" hidden>
+    <div class="top"><h1>الإعداد الأولي</h1></div>
+    <div class="card">
+      <p style="margin:0 0 16px;font-size:14px;color:#4b463d">
+        الصق رابط تطبيق الويب (Web App) المنتهي بـ <bdi>/exec</bdi>
+        وكلمة المرور التي وضعتها في كود Apps Script.
+      </p>
+      <label>رابط Apps Script</label>
+      <input type="url" id="su-api" placeholder="https://script.google.com/macros/s/…/exec" dir="ltr">
+      <label>كلمة المرور</label>
+      <input type="password" id="su-pass" placeholder="كلمة المرور">
+      <button class="btn btn-p" id="su-save">حفظ ودخول</button>
+      <p class="hint">تُحفظ في متصفحك فقط ولا تُرسل لأي جهة غير خدمتك.</p>
+    </div>
+  </div>
+
+  <!-- الشاشة الرئيسية -->
+  <div id="main" hidden>
+    <div class="top">
+      <h1>روابطي الإعلانية</h1>
+      <button class="btn btn-ic" id="btn-settings" type="button">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        الإعدادات
+      </button>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">1</span> إضافة رابط إعلاني جديد</h2>
+      <label>اسم الرابط (يظهر بعد # في الرابط المختصر)</label>
+      <input type="text" id="in-name" placeholder="مثال: adsterra-1" autocomplete="off">
+      <div class="preview" id="preview"></div>
+      <label>رابط Smart Link الكامل</label>
+      <input type="url" id="in-url" placeholder="https://www.profitableratecpm.com/…" dir="ltr" autocomplete="off">
+      <button class="btn btn-p" id="btn-create" type="button">إنشاء الرابط</button>
+    </div>
+
+    <div class="card created" id="created" hidden>
+      <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        تم إنشاء الرابط — انسخه وضعه في تعليقك</h2>
+      <div class="link" id="created-link"></div>
+      <div class="row-actions">
+        <button class="btn btn-p" id="btn-copy-new" type="button">نسخ الرابط</button>
+        <button class="btn" id="btn-test-new" type="button">فتح للاختبار</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">2</span> الروابط المنشأة <span id="count" style="font-weight:400;color:var(--muted)"></span></h2>
+      <div id="list"><div class="empty">جارٍ التحميل…</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var API  = localStorage.getItem('sl_api')  || '';
+  var PASS = localStorage.getItem('sl_pass') || '';
+  // الرابط الأساسي يُحسب تلقائيًا من مكان وجود admin.html
+  var BASE = location.origin + location.pathname.replace(/[^\/]*$/, '');
+
+  var IC = {
+    copy: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
+    open: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>',
+    trash: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>'
+  };
+
+  function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+  var toastTimer;
+  function toast(m) {
+    var t = $('#toast');
+    t.textContent = m;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
+
+  function copyText(t) {
+    if (!t) return;
+    function ok() { toast('نُسخ الرابط إلى الحافظة'); }
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = t; ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); ok(); } catch (e) { toast('تعذّر النسخ — انسخه يدويًا'); }
+      ta.remove();
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t).then(ok).catch(fallback);
+    } else fallback();
+  }
+
+  function linkOf(n) { return BASE + '#' + n; }
+
+  function cleanName(s) {
+    return s.trim().replace(/[#\s]+/g, '-')
+            .replace(/[?&=\/\\%"'+<>]/g, '')
+            .replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+  }
+
+  // استدعاء الخدمة — نرسل JSON كـ text/plain لتجنّب طلبات CORS المسبقة
+  function api(action, extra) {
+    return fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(Object.assign({ password: PASS, action: action }, extra || {}))
+    }).then(function (r) { return r.json(); });
+  }
+
+  /* ---------- الشاشات ---------- */
+  function showSetup() {
+    $('#setup').hidden = false; $('#main').hidden = true;
+    $('#su-api').value = API; $('#su-pass').value = PASS;
+  }
+
+  function showMain() {
+    $('#setup').hidden = true; $('#main').hidden = false;
+    updatePreview();
+    loadList();
+  }
+
+  /* ---------- الإعداد ---------- */
+  $('#su-save').onclick = function () {
+    var a = $('#su-api').value.trim(), p = $('#su-pass').value;
+    if (!/^https:\/\/script\.google\.com\//.test(a)) return toast('الرابط غير صحيح — يجب أن يبدأ بـ https://script.google.com/');
+    if (!p) return toast('اكتب كلمة المرور');
+    API = a; PASS = p;
+    var b = this; b.disabled = true; b.textContent = 'جارٍ التحقق…';
+    api('list').then(function (d) {
+      if (d.ok) {
+        localStorage.setItem('sl_api', API);
+        localStorage.setItem('sl_pass', PASS);
+        showMain();
+      } else toast(d.error || 'تعذّر التحقق — تأكد من كلمة المرور');
+    }).catch(function () { toast('تعذّر الاتصال بالخدمة — تأكد من الرابط'); })
+      .finally(function () { b.disabled = false; b.textContent = 'حفظ ودخول'; });
+  };
+
+  /* ---------- المعاينة الحية ---------- */
+  function updatePreview() {
+    var n = cleanName($('#in-name').value);
+    $('#preview').innerHTML = n
+      ? esc(BASE) + '#<b>' + esc(n) + '</b>'
+      : esc(BASE) + '#اسم-الرابط';
+  }
+  $('#in-name').addEventListener('input', updatePreview);
+
+  /* ---------- الإنشاء ---------- */
+  $('#btn-create').onclick = function () {
+    var name = cleanName($('#in-name').value);
+    var url  = $('#in-url').value.trim();
+    if (!name) return toast('اكتب اسمًا للرابط أولًا');
+    if (!/^https?:\/\/.{4,}/i.test(url)) return toast('الصق رابطًا صحيحًا يبدأ بـ http');
+    var b = this; b.disabled = true;
+    b.innerHTML = '<span class="spin"></span> جارٍ الإنشاء…';
+    api('add', { name: name, url: url }).then(function (d) {
+      if (d.ok) {
+        $('#created').hidden = false;
+        $('#created-link').textContent = linkOf(name);
+        $('#in-name').value = ''; $('#in-url').value = '';
+        updatePreview();
+        loadList();
+        toast('أُنشئ الرابط بنجاح');
+      } else toast(d.error || 'تعذّر الإنشاء');
+    }).catch(function () { toast('تعذّر الاتصال بالخدمة'); })
+      .finally(function () { b.disabled = false; b.textContent = 'إنشاء الرابط'; });
+  };
+
+  $('#btn-copy-new').onclick = function () { copyText($('#created-link').textContent); };
+  $('#btn-test-new').onclick = function () { window.open($('#created-link').textContent, '_blank'); };
+  $('#btn-settings').onclick = showSetup;
+
+  /* ---------- القائمة ---------- */
+  function loadList() {
+    var box = $('#list');
+    box.innerHTML = '<div class="empty">جارٍ التحميل…</div>';
+    api('list').then(function (d) {
+      if (!d.ok) { box.innerHTML = '<div class="empty">' + esc(d.error || 'خطأ في التحميل') + '</div>'; return; }
+      var items = d.items || [];
+      $('#count').textContent = items.length ? '(' + items.length + ')' : '';
+      if (!items.length) {
+        box.innerHTML = '<div class="empty">لا توجد روابط بعد — أنشئ أول رابط من الأعلى.</div>';
+        return;
+      }
+      box.innerHTML = '';
+      items.forEach(function (it) { box.appendChild(row(it.name, it.url)); });
+    }).catch(function () { box.innerHTML = '<div class="empty">تعذّر الاتصال بالخدمة.</div>'; });
+  }
+
+  function mkBtn(icon, label) {
+    var b = document.createElement('button');
+    b.className = 'btn btn-ic'; b.type = 'button';
+    b.innerHTML = icon; b.title = label; b.setAttribute('aria-label', label);
+    return b;
+  }
+
+  function row(name, rawUrl) {
+    var div = document.createElement('div'); div.className = 'item'; div.title = rawUrl;
+
+    var info = document.createElement('div'); info.className = 'info';
+    var nm = document.createElement('div'); nm.className = 'name'; nm.textContent = name;
+    var sh = document.createElement('div'); sh.className = 'short'; sh.textContent = linkOf(name);
+    info.appendChild(nm); info.appendChild(sh);
+
+    var actions = document.createElement('div');
+    actions.style.cssText = 'display:flex;gap:2px;flex:none';
+
+    var bCopy = mkBtn(IC.copy, 'نسخ الرابط المختصر');
+    bCopy.onclick = function () { copyText(linkOf(name)); };
+
+    var bOpen = mkBtn(IC.open, 'فتح للاختبار');
+    bOpen.onclick = function () { window.open(linkOf(name), '_blank'); };
+
+    var bDel = mkBtn(IC.trash, 'حذف');
+    bDel.onclick = function () {
+      var self = this;
+      if (this.dataset.arm) {                       // الضغطة الثانية: حذف فعلي
+        this.disabled = true;
+        api('delete', { name: name }).then(function (d) {
+          if (d.ok) { toast('حُذف "' + name + '"'); loadList(); }
+          else { toast(d.error || 'تعذّر الحذف'); self.disabled = false; }
+        }).catch(function () { toast('تعذّر الاتصال'); self.disabled = false; });
+      } else {                                      // الضغطة الأولى: تأكيد
+        this.dataset.arm = '1';
+        this.classList.add('armed');
+        this.textContent = 'تأكيد؟';
+        setTimeout(function () {
+          if (self.isConnected) {
+            delete self.dataset.arm;
+            self.classList.remove('armed');
+            self.innerHTML = IC.trash;
+          }
+        }, 2600);
+      }
+    };
+
+    actions.appendChild(bCopy); actions.appendChild(bOpen); actions.appendChild(bDel);
+    div.appendChild(info); div.appendChild(actions);
+    return div;
+  }
+
+  /* ---------- البدء ---------- */
+  (API && PASS) ? showMain() : showSetup();
+})();
+</script>
+</body>
+</html>
